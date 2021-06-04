@@ -1,112 +1,107 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
 
 import React from 'react';
-import type {Node} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
+import { Card, Title, Button, Searchbar, Paragraph } from 'react-native-paper'
+import { FlatList, TouchableHighlight } from 'react-native-gesture-handler';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+
+
+const data = [
+  { id: 1, titulo: 't1', autor: 'a1', noticia: 'n1' },
+  { id: 2, titulo: 't2', autor: 'a2', noticia: 'n2' },
+  { id: 3, titulo: 't2', autor: 'a2', noticia: 'n2' },
+  { id: 4, titulo: 't2', autor: 'a2', noticia: 'n2' },
+  { id: 5, titulo: 't2', autor: 'a2', noticia: 'n2' },
+  { id: 6, titulo: 't2', autor: 'a2', noticia: 'n2' },
+  { id: 7, titulo: 't2', autor: 'a2', noticia: 'n2' },
+]
+
+const Home = ({ navigation }) => {
+
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  const addNews = () => {
+    navigation.navigate('Add')
+  }
+
+  const Item = ({ item }) => {
+    return (
+      <TouchableHighlight key={item.id}
+        onPress={() => navigation.navigate('View', {
+          action: 'view',
+          id: item.id,
+          titulo: item.titulo,
+          autor: item.autor,
+          noticia: item.noticia
+        })}
+      >
+        <Card style={{ marginVertical: 2 }}>
+          <Card.Content>
+
+            <Title>{item.titulo}</Title>
+            <Paragraph>{item.autor}</Paragraph>
+
+          </Card.Content>
+        </Card>
+      </TouchableHighlight>
+
+    )
+  }
+
+  const listaVazia = () => {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>
+          Não há notícias armazenadas
+        </Text>
+      </View>
+    )
+  }
+
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.Container}>
+      <Card>
+        <Card.Content>
+          <Title>Portal de notícias</Title>
+        </Card.Content>
+      </Card>
+      <Searchbar
+        placeholder="Filtro de notícias"
+        onChangeText={(text: string) => setSearchQuery(text)}
+        value={searchQuery}
+        style={styles.filtro}
+      />
+      <FlatList
+        data={data}
+        renderItem={Item}
+        ScrollView={false}
+        contentContainerStyle={data.length === 0 ? { flex: 1 } : null}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={listaVazia}
+
+      />
+      <Button mode="contained" onPress={() => addNews()}>
+        Adicionar notícia
+      </Button>
     </View>
   );
 };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  Container: {
+    paddingVertical: 24,
+    paddingHorizontal: 15,
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+  filtro: {
+    marginVertical: 10
+  }
 });
 
-export default App;
+export default Home;
