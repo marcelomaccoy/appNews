@@ -26,6 +26,7 @@ export const adicionarNoticia = async (noticia: object) => {
     }
     listaRetorno.unshift(noticia);
     await AsyncStorage.setItem('@listagemNoticias',JSON.stringify(listaRetorno));
+    return true
 }
 
 export const excluirNoticia = async (id: any) => {
@@ -36,6 +37,7 @@ export const excluirNoticia = async (id: any) => {
     }
     listaRetorno = listaRetorno.filter((noticia) => noticia.id !== id);
     await AsyncStorage.setItem('@listagemNoticias',JSON.stringify(listaRetorno));
+    return true
 }
 
 export const editarNoticia = async (noticia: object) => {
@@ -47,6 +49,7 @@ export const editarNoticia = async (noticia: object) => {
     listaRetorno = listaRetorno.filter((itemNoticia) => itemNoticia.id !== noticia.id);
     listaRetorno.unshift(noticia);
     await AsyncStorage.setItem('@listagemNoticias',JSON.stringify(listaRetorno));
+    return true
 }
 
 

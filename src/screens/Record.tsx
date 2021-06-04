@@ -25,7 +25,6 @@ const Record = ({ navigation, route }) => {
 
     React.useEffect(() => {
         route.params?.action !== action && setAction(route.params?.action)
-        console.log(route.params)
         if(route.params?.action === 'update'){
             setId(route.params.id)
             setTitulo(route.params.titulo)
@@ -79,7 +78,7 @@ const Record = ({ navigation, route }) => {
                             <Button 
                                 mode="contained" 
                                 disabled={titulo.length===0 || autor.length === 0 || noticia.length === 0}
-                                onPress={ () => {
+                                onPress={ async () => {
                                 if(action === 'view'){
                                     setAction('update')
                                 }
@@ -91,7 +90,7 @@ const Record = ({ navigation, route }) => {
                                         autor,
                                         noticia
                                     }
-                                     adicionarNoticia(novaNoticia)
+                                    await adicionarNoticia(novaNoticia)
                                     navigation.navigate('Home',{ update: true })
                                 }
                                 if(action === 'update'){
@@ -101,7 +100,7 @@ const Record = ({ navigation, route }) => {
                                         autor,
                                         noticia
                                     }
-                                     editarNoticia(novaNoticia)
+                                    await editarNoticia(novaNoticia)
                                     navigation.navigate('Home',{ update: true })
                                 }
                             }}>
@@ -110,8 +109,8 @@ const Record = ({ navigation, route }) => {
                         </View>
                         {action === 'view' && 
                         <View style={styles.mainButton}>
-                            <Button mode="outlined" onPress={() => {
-                                excluirNoticia(id)
+                            <Button mode="outlined" onPress={async () => {
+                                await excluirNoticia(id)
                                 navigation.navigate('Home',{ update: true })
                             }}>
                             Excluir
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     secondaryButton: {
-        marginBottom: 45
+        marginBottom: 10
     }
 });
 

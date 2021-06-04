@@ -29,13 +29,11 @@ const Home = ({ navigation, route }) => {
   }, [searchQuery]);
 
   React.useEffect(async () => {
-    console.log('update')
     if(route.params?.update){
       await callRefresh()
-      navigation.setParams('update',false)
     }
 
-  }, [route.params.update]);
+  }, [route]);
 
   const addNews = () => {
     navigation.navigate('Add')
@@ -77,7 +75,7 @@ const Home = ({ navigation, route }) => {
   }
 
   const callRefresh = async () => {
-    console.log('netrou')
+    
     setRefresh(true)
     let dados = await carregarNoticias()
     setDataTotal(dados)
