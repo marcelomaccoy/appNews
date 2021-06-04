@@ -12,24 +12,28 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { DefaultTheme, TextInput, Card, Title, Button } from 'react-native-paper'
+import { adicionarNoticia, excluirNoticia, editarNoticia } from '../services'
 
 
 const Record = ({ navigation, route }) => {
 
     const [action, setAction] = React.useState('');
+    const [id, setId] = React.useState('');
     const [titulo, setTitulo] = React.useState('');
     const [autor, setAutor] = React.useState('');
     const [noticia, setNoticia] = React.useState('');
 
     React.useEffect(() => {
         route.params?.action !== action && setAction(route.params?.action)
+        console.log(route.params)
         if(route.params?.action === 'update'){
+            setId(route.params.id)
             setTitulo(route.params.titulo)
             setAutor(route.params.autor)
             setNoticia(route.params.noticia)
         }
         if(route.params?.action === 'view'){
-            console.log(route.params)
+            setId(route.params.id)
             setTitulo(route.params.titulo)
             setAutor(route.params.autor)
             setNoticia(route.params.noticia)
@@ -47,7 +51,7 @@ const Record = ({ navigation, route }) => {
                     <View style={styles.Container}>
                         <TextInput
                             style={styles.InputStyle}
-                            placeholder="Preencha o título"
+                            placeholder="Preencha o título (obrigatório)"
                             label="Título"
                             value={titulo}
                             disabled={action==='view'}
@@ -55,7 +59,7 @@ const Record = ({ navigation, route }) => {
                         />
                         <TextInput
                             style={styles.InputStyle}
-                            placeholder="Preencha o autor"
+                            placeholder="Preencha o autor (obrigatório)"
                             label="Autor"
                             value={autor}
                             disabled={action==='view'}
@@ -75,9 +79,30 @@ const Record = ({ navigation, route }) => {
                             <Button 
                                 mode="contained" 
                                 disabled={titulo.length===0 || autor.length === 0 || noticia.length === 0}
-                                onPress={() => {
+                                onPress={ () => {
                                 if(action === 'view'){
                                     setAction('update')
+                                }
+                                if(action === 'add'){
+                                    const id = Date.now()
+                                    const novaNoticia = {
+                                        id,
+                                        titulo,
+                                        autor,
+                                        noticia
+                                    }
+                                     adicionarNoticia(novaNoticia)
+                                    navigation.navigate('Home',{ update: true })
+                                }
+                                if(action === 'update'){
+                                    const novaNoticia = {
+                                        id,
+                                        titulo,
+                                        autor,
+                                        noticia
+                                    }
+                                     editarNoticia(novaNoticia)
+                                    navigation.navigate('Home',{ update: true })
                                 }
                             }}>
                             { action === 'add'? 'Adicionar': action === 'update'? 'Atualizar': 'Editar'}
@@ -85,7 +110,10 @@ const Record = ({ navigation, route }) => {
                         </View>
                         {action === 'view' && 
                         <View style={styles.mainButton}>
-                            <Button mode="outlined" onPress={() => console.log('excluir')}>
+                            <Button mode="outlined" onPress={() => {
+                                excluirNoticia(id)
+                                navigation.navigate('Home',{ update: true })
+                            }}>
                             Excluir
                             </Button>
                         </View>

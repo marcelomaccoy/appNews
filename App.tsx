@@ -30,7 +30,7 @@ const App: () => Node = () => {
     <NavigationContainer>
       <PaperProvider theme={theme}>
         <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={Home} options={{ headerShown: false}}/>
+          <Stack.Screen name="Home" component={Home} options={{ headerShown: false}} initialParams={{ action: 'home' }}/>
           <Stack.Screen name="Add" component={Record} options={{ title: 'Adicionar notícia' }} initialParams={{ action: 'add' }}/>
           <Stack.Screen name="Update" component={Record} options={{ title: 'Editar notícia' }} initialParams={{ action: 'update' }}/>
           <Stack.Screen name="View" component={Record} options={{ title: 'Visualizar notícia' }} initialParams={{ action: 'view' }}/>

@@ -4,26 +4,38 @@ import {
   StyleSheet,
   Text,
   View,
+  RefreshControl
 } from 'react-native';
 import { Card, Title, Button, Searchbar, Paragraph } from 'react-native-paper'
 import { FlatList, TouchableHighlight } from 'react-native-gesture-handler';
+import { carregarNoticias, filtrarNoticias } from '../services';
 
 
-
-
-const data = [
-  { id: 1, titulo: 't1', autor: 'a1', noticia: 'n1' },
-  { id: 2, titulo: 't2', autor: 'a2', noticia: 'n2' },
-  { id: 3, titulo: 't2', autor: 'a2', noticia: 'n2' },
-  { id: 4, titulo: 't2', autor: 'a2', noticia: 'n2' },
-  { id: 5, titulo: 't2', autor: 'a2', noticia: 'n2' },
-  { id: 6, titulo: 't2', autor: 'a2', noticia: 'n2' },
-  { id: 7, titulo: 't2', autor: 'a2', noticia: 'n2' },
-]
-
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
 
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [dataTotal, setDataTotal] = React.useState([]);
+  const [dataFiltro, setDataFiltro] = React.useState([]);
+  const [refresh, setRefresh] = React.useState(false);
+
+  React.useEffect(async () => {
+    let listagem = []
+    if(dataFiltro.length === 0){
+      await callRefresh()
+    }
+    listagem = filtrarNoticias(searchQuery,dataTotal)
+    setDataFiltro(listagem)
+
+  }, [searchQuery]);
+
+  React.useEffect(async () => {
+    console.log('update')
+    if(route.params?.update){
+      await callRefresh()
+      navigation.setParams('update',false)
+    }
+
+  }, [route.params.update]);
 
   const addNews = () => {
     navigation.navigate('Add')
@@ -42,8 +54,9 @@ const Home = ({ navigation }) => {
       >
         <Card style={{ marginVertical: 2 }}>
           <Card.Content>
-
+            <Text style={{fontSize: 10}}>Título</Text>
             <Title>{item.titulo}</Title>
+            <Text style={{fontSize: 10}}>Autor</Text>
             <Paragraph>{item.autor}</Paragraph>
 
           </Card.Content>
@@ -57,10 +70,19 @@ const Home = ({ navigation }) => {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>
-          Não há notícias armazenadas
+          Não há notícias salvas
         </Text>
       </View>
     )
+  }
+
+  const callRefresh = async () => {
+    console.log('netrou')
+    setRefresh(true)
+    let dados = await carregarNoticias()
+    setDataTotal(dados)
+    setDataFiltro(dados)
+    setRefresh(false)
   }
 
 
@@ -78,10 +100,13 @@ const Home = ({ navigation }) => {
         style={styles.filtro}
       />
       <FlatList
-        data={data}
+        refreshControl={<RefreshControl refreshing={refresh} onRefresh={callRefresh} />}
+        data={dataFiltro}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
         renderItem={Item}
-        ScrollView={false}
-        contentContainerStyle={data.length === 0 ? { flex: 1 } : null}
+        onRefresh={() => callRefresh()}
+        contentContainerStyle={dataFiltro.length === 0 ? { flex: 1 } : null}
         keyExtractor={item => item.id}
         ListEmptyComponent={listaVazia}
 
